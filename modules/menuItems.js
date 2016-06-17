@@ -4,7 +4,6 @@ const BrowserWindow = electron.BrowserWindow;
 const MenuItem = electron.MenuItem;
 const Menu = electron.Menu;
 const shell = electron.shell;
-const config = require('../config.js');
 const log = require('./utils/logger').create('menuItems');
 const ipc = electron.ipcMain;
 const ethereumNode = require('./ethereumNode.js');
@@ -50,10 +49,10 @@ var menuTempl = function(webviews) {
 
     // APP
     menu.push({
-        label: i18n.t('mist.applicationMenu.app.label', {app: config.name}),
+        label: i18n.t('mist.applicationMenu.app.label', {app: global.appName}),
         submenu: [
             {
-                label: i18n.t('mist.applicationMenu.app.about', {app: config.name}),
+                label: i18n.t('mist.applicationMenu.app.about', {app: global.appName}),
                 click: function(){
                     Windows.createPopup('about', {
                         electronOptions: {
@@ -81,24 +80,24 @@ var menuTempl = function(webviews) {
                 type: 'separator'
             },
             {
-                label: i18n.t('mist.applicationMenu.app.hide', {app: config.name}),
+                label: i18n.t('mist.applicationMenu.app.hide', {app: global.appName}),
                 accelerator: 'Command+H',
                 role: 'hide'
             },
             {
-                label: i18n.t('mist.applicationMenu.app.hideOthers', {app: config.name}),
+                label: i18n.t('mist.applicationMenu.app.hideOthers', {app: global.appName}),
                 accelerator: 'Command+Alt+H',
                 role: 'hideothers'
             },
             {
-                label: i18n.t('mist.applicationMenu.app.showAll', {app: config.name}),
+                label: i18n.t('mist.applicationMenu.app.showAll', {app: global.appName}),
                 role: 'unhide'
             },
             {
                 type: 'separator'
             },
             {
-                label: i18n.t('mist.applicationMenu.app.quit', {app: config.name}),
+                label: i18n.t('mist.applicationMenu.app.quit', {app: global.appName}),
                 accelerator: 'CommandOrControl+Q',
                 click: function(){
                     app.quit();
@@ -320,7 +319,7 @@ var menuTempl = function(webviews) {
             label: i18n.t('mist.applicationMenu.develop.ethereumNode'),
             submenu: [
               {
-                label: 'Geth 1.4.5 (Go)',
+                label: 'Geth 1.4.7 (Go)',
                 checked: ethereumNode.isOwnNode && ethereumNode.isGeth,
                 enabled: ethereumNode.isOwnNode,
                 type: 'checkbox',
@@ -329,7 +328,7 @@ var menuTempl = function(webviews) {
                 }
               },
               {
-                label: 'Eth 1.2.4 (C++) [experimental!]',
+                label: 'Eth 1.2.9 (C++) [experimental!]',
                 checked: ethereumNode.isOwnNode && ethereumNode.isEth,
                 enabled: ethereumNode.isOwnNode,
                 type: 'checkbox',
@@ -373,10 +372,10 @@ var menuTempl = function(webviews) {
         click: function(){
             if(!global.mining) {
                 ethereumNode.send('miner_start', [1])
-                    .then((result) => {
-                        log.info('miner_start', result);
+                    .then((ret) => {
+                        log.info('miner_start', ret.result);
 
-                        if (result) {
+                        if (ret.result) {
                             global.mining = true;
                             createMenu(webviews);
                         }                        
@@ -386,10 +385,10 @@ var menuTempl = function(webviews) {
                     });
             } else {
                 ethereumNode.send('miner_stop', [1])
-                    .then((result) => {
-                        log.info('miner_stop', result);
+                    .then((ret) => {
+                        log.info('miner_stop', ret.result);
 
-                        if (result) {
+                        if (ret.result) {
                             global.mining = false;
                             createMenu(webviews);
                         }                        
